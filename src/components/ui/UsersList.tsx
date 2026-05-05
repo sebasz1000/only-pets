@@ -45,13 +45,13 @@ function UsersList(){
     if(!showList) return null
 
     if(!hasPets){
-        return  <div className="mt-6 absolute top-5 left-0 w-80 bg-slate-200 -translate-x-1/7 px-3 py-2 max-h-[550px] b-local z-10 shadow-xl border-1 border-slate-500">
+        return  <div className="mt-6 absolute top-5 left-0 w-80 bg-slate-200 -translate-x-1/4 px-3 py-2 max-h-[550px] b-local z-10 shadow-xl border-1 border-slate-500">
             <p className="text-xs text-center text-slate-600">There are not matches for this query</p>
         </div>
     }
 
     return(
-            <ul className="mt-6 absolute top-5 left-0 w-80 bg-slate-200 -translate-x-1/7 max-h-[550px] overflow-y-auto b-local z-10 shadow-xl border-1 border-slate-500" ref={listRef}>
+            <ul className="mt-6 absolute top-5 left-0 w-80 bg-slate-200 -translate-x-23 md:-translate-x-0 max-h-[550px] overflow-y-auto b-local z-10 shadow-xl border-1 border-slate-500" ref={listRef}>
                 {
                     pets.map( ({username, id, name}, key) => { 
                     

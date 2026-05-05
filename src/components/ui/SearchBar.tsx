@@ -37,18 +37,20 @@ function SearchBar({ children } :{ children : React.ReactNode}){
     }, [searchParams])
 
     return(
-        <div className="flex flex-col bg-slate-200 py-2 px-3 rounded-3xl relative
+        <div className="flex w-40 md:w-80 flex-col bg-slate-200 md:py-2 md:px-3 py-2 px-2 rounded-3xl relative
         ">
             <div className="flex ">
-                <label htmlFor="searchText" className="mr-2">
+                <label htmlFor="searchText" className="mr-1 md:mr-2">
                     <Search className='text-slate-400' size={22}/>
                 </label>
         
                 <input type="text"
-                className="bg-transparent text-black text-sm"
-                value={inputValue}
-                placeholder="Lalo.." 
-                onChange={(e) => handleSearch(e.currentTarget.value)} />
+                        className="bg-transparent text-black text-sm w-full"
+                        value={inputValue}
+                        placeholder="Lalo.." 
+                        name="searchText"
+                        id="searchText"
+                        onChange={(e) => handleSearch(e.currentTarget.value)} />
             </div>
                { children }
         </div>

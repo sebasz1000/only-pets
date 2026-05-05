@@ -11,7 +11,7 @@ export default async function FeedPage() {
   const imgs: APIResponse[] = await data.json()
 
   return <Container>
-      <div className="border-1 border-pink grid grid-cols-2 md:grid-cols-4 rounded-xl overflow-hidden" >
+      <div className=" grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 rounded-xl overflow-hidden" >
       { imgs.map( img => {
         return (
         <div className="aspect-3/4 w-full" key={img.id} >
