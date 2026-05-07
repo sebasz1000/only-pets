@@ -13,7 +13,9 @@ function SearchBar({ children } :{ children : React.ReactNode}){
 
 
     const handleSearch = useCallback((searchText: string) => {
+        
         setInputValue(searchText)
+
         //deboucing!
         if(timerRef.current){
             clearTimeout(timerRef.current)
@@ -22,18 +24,15 @@ function SearchBar({ children } :{ children : React.ReactNode}){
         timerRef.current = setTimeout( () => {
             // New url get and set to route the browser
             const params = new URLSearchParams(searchParams) //changeable
-            if(searchText){
+            if(searchText.trim().length > 0){
                 params.set("search", searchText)
             }else{
                 params.delete("search")
             }
-
             const queryString = params.toString()
             const query = queryString ? `?${queryString}` : ""
             router.push(`${pathname}${query}`, { scroll: false})
         }, 400)
-       
-
     }, [searchParams])
 
     return(
