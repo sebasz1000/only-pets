@@ -1,9 +1,9 @@
 "use client"
 import { searchPets } from "@/app/actions/users";
-import { User, Product } from "@/types";
+import { Product } from "@/types";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
 
 
 function UsersList(){
@@ -14,23 +14,9 @@ function UsersList(){
     const [showList, setShowList] = useState(!!searchParams.get("search"))
     const hasSearchParamRef = useRef(!!searchParams.get("search"))
     const [error, setError] = useState<string | null>(null)
-   /* const handleClickOutside = useCallback((e: MouseEvent) => {
-            if(listRef.current && !listRef.current.contains(e.currentTarget as Node)){
-                isClosedRef.current = true
-            }
-    }, [searchQuery])*/
-
-    //checks if list was clicked outside
-    /*useEffect(() => {
-        document.addEventListener("click", handleClickOutside)
-        return () => document.removeEventListener("click",handleClickOutside)
-    }, [searchQuery])*/
-    
-    //useEffect(() => {isClosedRef.current = false },[searchQuery])
 
     useEffect(() => {
         const hasSearchParam = !!searchParams.get("search")
-        console.log(hasSearchParam)
         if(hasSearchParamRef.current === hasSearchParam)
             return
             setShowList(hasSearchParam)

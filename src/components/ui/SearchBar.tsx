@@ -1,7 +1,7 @@
 "use client"
 import { Search} from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 
 function SearchBar({ children } :{ children : React.ReactNode}){
@@ -10,7 +10,20 @@ function SearchBar({ children } :{ children : React.ReactNode}){
     const searchParams = useSearchParams() //readonly
     const timerRef = useRef<NodeJS.Timeout | null>(null)
     const [inputValue, setInputValue] = useState(searchParams.get("search")?.toString() ?? "")
+    const searchBarRef = useRef<HTMLDivElement | null>(null)
+    const [showChildren, setShowChildren] = useState(false)
+    
+    const handleClickOutside = useCallback((e : MouseEvent) => {
 
+        if(searchBarRef.current && !searchBarRef.current?.contains(e.target as Node)){
+            setShowChildren(false)
+        }        
+    }, [])
+
+    useEffect(() => {
+       document.addEventListener("click", handleClickOutside)
+        return () => document.removeEventListener("click", handleClickOutside)
+    }, [searchParams])
 
     const handleSearch = useCallback((searchText: string) => {
         
@@ -35,9 +48,12 @@ function SearchBar({ children } :{ children : React.ReactNode}){
         }, 400)
     }, [searchParams])
 
+    const handleClick = () => {
+        setShowChildren(true)
+    }
+
     return(
-        <div className="flex w-40 md:w-80 flex-col bg-slate-200 md:py-2 md:px-3 py-2 px-2 rounded-3xl relative
-        ">
+        <div className="flex w-40 md:w-80 flex-col bg-slate-200 md:py-2 md:px-3 py-2 px-2 rounded-3xl relative" ref={searchBarRef}>
             <div className="flex ">
                 <label htmlFor="searchText" className="mr-1 md:mr-2">
                     <Search className='text-slate-400' size={22}/>
@@ -49,9 +65,11 @@ function SearchBar({ children } :{ children : React.ReactNode}){
                         placeholder="Lalo.." 
                         name="searchText"
                         id="searchText"
-                        onChange={(e) => handleSearch(e.currentTarget.value)} />
+                        onChange={(e) => handleSearch(e.currentTarget.value)}
+                        onClick={(e) => handleClick()} />
             </div>
-               { children }
+
+               { showChildren ? children : null }
         </div>
     )
     
