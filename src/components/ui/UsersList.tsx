@@ -1,36 +1,32 @@
 "use client"
 import { searchPets } from "@/app/actions/users";
-import { User } from "@/types";
+import { Product } from "@/types";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
 
 
 function UsersList(){
-    const [pets, setPets] = useState<User[]>([])
+    const [pets, setPets] = useState<Product[]>([]) //!todo:change the type later
     const searchParams = useSearchParams()
     const searchQuery = searchParams.get("search") ?? ""
-    const listRef = useRef<HTMLUListElement>(null)
     const hasPets = pets.length > 0
-    const isClosedRef = useRef(true)
-    const showList = !isClosedRef.current
+    const [showList, setShowList] = useState(!!searchParams.get("search"))
+    const hasSearchParamRef = useRef(!!searchParams.get("search"))
     const [error, setError] = useState<string | null>(null)
 
-    const handleClickOutside = useCallback((e: MouseEvent) => {
-            if(listRef.current && !listRef.current.contains(e.currentTarget as Node)){
-                isClosedRef.current = true
-            }
-    }, [])
-
-    //checks if list was clicked outside
     useEffect(() => {
-        document.addEventListener("click", handleClickOutside)
-        return () => document.removeEventListener("click",handleClickOutside)
+        const hasSearchParam = !!searchParams.get("search")
+        if(hasSearchParamRef.current === hasSearchParam)
+            return
+            setShowList(hasSearchParam)
+            hasSearchParamRef.current = hasSearchParam
+
     }, [searchQuery])
-    
-    useEffect(() => {isClosedRef.current = false },[searchQuery])
 
     useEffect(() => {
+        if(!showList) return 
+
         searchPets({query: searchQuery, limit: 6 })
             .then(setPets)
             .catch(error => {
@@ -45,15 +41,15 @@ function UsersList(){
     if(!showList) return null
 
     if(!hasPets){
-        return  <div className="mt-6 absolute top-5 left-0 w-80 bg-slate-200 -translate-x-1/4 px-3 py-2 max-h-[550px] b-local z-10 shadow-xl border-1 border-slate-500">
+        return  <div className="mt-6 absolute top-5 left-0 w-80 bg-slate-200 -translate-x-23 md:-translate-x-0 px-3 py-2 max-h-[550px] b-local z-10 shadow-xl border-1 border-slate-500">
             <p className="text-xs text-center text-slate-600">There are not matches for this query</p>
         </div>
     }
 
     return(
-            <ul className="mt-6 absolute top-5 left-0 w-80 bg-slate-200 -translate-x-23 md:-translate-x-0 max-h-[550px] overflow-y-auto b-local z-10 shadow-xl border-1 border-slate-500" ref={listRef}>
+            <ul className="mt-6 absolute top-5 left-0 w-80 bg-slate-200 -translate-x-23 md:-translate-x-0 max-h-[550px] overflow-y-auto b-local z-10 shadow-xl border-1 border-slate-500" >
                 {
-                    pets.map( ({username, id, name}, key) => { 
+                    pets.map( ({category, id, title}, key) => { 
                     
                             const isLastElement = (pets.length - 1) === key
                             const borderString = !isLastElement ? "border-b-1  border-b-slate-500" : ""
@@ -64,8 +60,8 @@ function UsersList(){
                                 className={`flex align-center ${borderString} py-3 px-5 hover:bg-slate-300`}>
                                 <div className="flex flex-col justify-center text-black">
                                     
-                                        <h3 className="text-md">{name}</h3>
-                                        <span className="text-sm">{username}</span>
+                                        <h3 className="text-md">{title}</h3>
+                                        <span className="text-sm">{category}</span>
                                 </div>
                             </li> 
                             </Link>
