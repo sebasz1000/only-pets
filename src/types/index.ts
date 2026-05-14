@@ -37,3 +37,8 @@ export interface Comment {
   postId: string
   createdAt: Date
 }
+
+export interface ViewType{
+    title?: string
+    node: React.ReactNode
+}

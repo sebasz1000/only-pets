@@ -1,8 +1,9 @@
 "use client"
+import { ViewType } from "@/types"
 import { ArrowLeft, Image, LucideProps, SquarePlay, X, ZoomIn } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import React, { useState, useEffect, useRef} from "react"
+import React, { useState, useEffect, useRef, useCallback} from "react"
 function CreatePostModal(){
 
     const boxRef = useRef<HTMLDivElement | null>(null)
@@ -10,6 +11,7 @@ function CreatePostModal(){
     const router = useRouter()
     const [step, setStep] = useState(1)
     const [imageFile, setImageFile] = useState<File | null>(null)
+    const zoomValueRef = useRef("")
     
     //disables scrolling on modal load
     useEffect(() => {
@@ -21,7 +23,8 @@ function CreatePostModal(){
     useEffect(() => {
         const handleClickOutside = (e : MouseEvent) => {
             if(boxRef.current && !boxRef.current.contains(e.target as Node)){
-                router.push("/", { scroll: false})
+                //router.push("/", { scroll: false})
+                handleClosePostModal(0)
             }
         }
         document.addEventListener("mousedown", handleClickOutside)
@@ -43,13 +46,23 @@ function CreatePostModal(){
     const handleInputFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const fileList: FileList | null = e.target.files
         if(fileList && fileList?.length > 0){
-            console.log(fileList[0])
             setImageFile(fileList[0])
         }
     }
 
-    const getStepView = () => {
-        let view = null
+    const handleZoomValue = (zoomValue: string) => {
+        zoomValueRef.current = zoomValue
+    }
+
+    const handleClosePostModal = ( delay = 0 ) => {
+      setTimeout(() => {
+          router.push("/", { scroll: false })
+      }, delay)
+     
+    }
+
+    const getStepView = useCallback( (step: number) : ViewType => {
+        let view: ViewType | null = null
         if(step === 1){
             view = { 
                 title : "Create new post", 
@@ -60,44 +73,55 @@ function CreatePostModal(){
         }else if(step === 2){
             view = {
                 title: "Crop",
-                node: <CropMediaStep imageFile={imageFile} />
+                node: <CropMediaStep imageFile={imageFile} 
+                                     onZoomValueChange={handleZoomValue} />
             }
         }else if(step === 3){
             view = {
                 title: "Final Touch",
-                node: <FinalStep />
+                node: <FinalStep  onPublish={(e) => handleNextStep(e)}
+                                  imageFile={imageFile}
+                                  zoomValue={zoomValueRef.current} />
+            }
+        }else{
+            view = {
+                node:  <PublishedMessage onClose={handleClosePostModal} />
             }
         }
-
         return view
-    }
+    },[step])
+
 
     const getBackBtn = () => (step !== 1) ? (<button type="button" onClick={handleBackStep} ><ArrowLeft size={25}/></button>) : null
 
     const getNextBtn = () => (step === 2 ) ? <button type="button" className="text-sm font-bold bg-blue-700 rounded-md px-3 py-1 hover:bg-blue-600 transition-all" onClick={handleNextStep}>Next</button> : null
 
     const handleBackStep = (e: React.MouseEvent<HTMLButtonElement>) => {
-        console.log("clicked!")
         setStep(prevState => prevState - 1)
+    }
+
+    const getHeader = () => {
+        return ( step !== 4 )  
+                    ? (<header className="w-full bg-gray-950 py-2 px-4 flex justify-between items-center">
+                        {getBackBtn()}
+                        <h3 className="text-md font-bold m-auto">{stepView.title}</h3>
+                        {getNextBtn()}
+                      </header>)
+                    : null
     }
 
     const handleNextStep = (e: React.MouseEvent<HTMLButtonElement>) => {
         setStep(prevState => prevState + 1)
     }
-    console.log(`********* STEP #${step} **********`)
 
-    const stepView = getStepView() ?? { title: "", node: <></>}
+    const stepView = getStepView(step) ?? { title: "", node: <></>}
 
     return (<div className="fixed w-screen h-screen bg-black/85 flex justify-center items-center z-10">
         <Link  className="absolute right-[25px] top-[25px]" href="/">
             <X size="30"/>
         </Link>
-        <div className="bg-gray-900 w-xl " ref={boxRef}>
-            <header className="w-full bg-gray-950 py-2 px-4 flex justify-between items-center">
-                {getBackBtn()}
-                <h3 className="text-md font-bold m-auto">{stepView.title}</h3>
-                {getNextBtn()}
-            </header>
+        <div className="bg-gray-900 w-xl min-w-lg min-h-[400px] " ref={boxRef}>
+            { getHeader() }
             { stepView.node }
         </div>
     </div>)
@@ -131,10 +155,12 @@ function UploadMediaStep({
 }
 
 function CropMediaStep({ 
-    imageFile 
+    imageFile, 
+    onZoomValueChange
 } :
 {
     imageFile: File | null
+    onZoomValueChange: (zoomValue: string) => void
 } ){
     const [zoomValue, setZoomValue] = useState("1")
     const objectUrl = imageFile ? URL.createObjectURL(imageFile) : ""
@@ -142,8 +168,7 @@ function CropMediaStep({
 
 
     const handleZoom = (e: React.ChangeEvent<HTMLInputElement>) => {
-
-    console.log(e.target.value)
+    onZoomValueChange(e.target.value)
     setZoomValue(e.target.value)
 
     }
@@ -169,20 +194,31 @@ function CropMediaStep({
             </div>
             <div className="flex items-center my-5 py-3 px-4 rounded-xl bg-slate-950">
                 <ZoomIn size={22} className="mr-3"/>
-                <input type="range" min="1" max="3" step="0.1" onChange={handleZoom} value={0} />
-
+                <input type="range" min="1" max="3" step="0.1" onChange={handleZoom}  />
             </div>
         </section>
     )
 }
 
-function FinalStep(){
+function FinalStep({ 
+    onPublish,
+    imageFile,
+    zoomValue
+}: {
+    onPublish: (e : React.MouseEvent<HTMLButtonElement>) => void
+    imageFile: File | null
+    zoomValue: string
+}){
+
+    const objectUrl = imageFile ? URL.createObjectURL(imageFile) : ""
+
     return (<section className="w-full">
         <div className="grid grid-cols-2 gap-0">
              <div className="relative overflow-hidden">
-                <img src="https://cdn.pixabay.com/photo/2025/06/20/10/47/dog-9670619_1280.jpg"
-                     alt="Meanwhile"
-                     width="300px" />
+                <img src={objectUrl}
+                     alt="Cropped image"
+                     width="300px"
+                      style={{ transform: `scale(${zoomValue})` }} />
             </div>
             <div className="p-4">
                 <div className="flex">
@@ -199,9 +235,50 @@ function FinalStep(){
                     </div>
                 </div>
                 <textarea className="w-full bg-slate-800 mt-4 p-2 text-sm" placeholder="Write what you think!" 
-                    rows={10} ></textarea>
+                    rows={13} ></textarea>
+                    <button className="bg-blue-700 hover:bg-blue-600 p-2 w-full rounded-lg mt-3 font-bold text-sm"
+                            onClick={onPublish}>
+                        Publish
+                    </button>
             </div>
         </div>
     </section>)
 }
+
+function PublishedMessage({ onClose } : { onClose: (delay: number) => void}){
+
+    const [isLoading, setIsLoading] = useState(true)
+
+    useEffect(() => {
+        getServerOk()
+    },[])
+
+    const getServerOk = async () =>  {
+        await new Promise( resolve =>  setTimeout(resolve, 3000))
+        setIsLoading(false)
+        onClose(3000)
+    }
+
+    const getSuccessMsg = () =>  (<><img src="https://lh5.googleusercontent.com/proxy/8FzlLwmcTLuoHdYnTn1CHSwoJ-oi5UTDORu7BG1v1XmYquGZIko0i3GzpaXRR4qn17cv89z6Y9Bgk04v2KP-3mMMI9SX4BjaSpbG_H26TFYYJVVT2nvnMRKV"
+            alt="Hurra! gif"
+            width="200px"
+            height="auto" 
+            className="mx-auto mt-4"/>
+        <h3 className="text-3xl text-center mb-13">Post published!</h3></>)
+    
+    const getLoader = () => <div><img src="https://mir-s3-cdn-cf.behance.net/project_modules/max_632/04de2e31234507.564a1d23645bf.gif" 
+                                 width="100px" 
+                                 height="100px"
+                                 className="mx-auto my-4" /></div>
+
+    return (<section className="w-full h-96 flex justify-center items-center flex-col">
+            {
+                isLoading 
+                    ? getLoader()
+                    : getSuccessMsg()
+            }
+         </section>)
+}
+
+
 export {CreatePostModal}
