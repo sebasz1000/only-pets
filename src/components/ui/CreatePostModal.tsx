@@ -1,6 +1,6 @@
 "use client"
 import { ViewType } from "@/types"
-import { ArrowLeft, Image, LucideProps, SquarePlay, X, ZoomIn } from "lucide-react"
+import { ArrowLeft, Image, SquarePlay, X, ZoomIn } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import React, { useState, useEffect, useRef, useCallback} from "react"
@@ -23,7 +23,6 @@ function CreatePostModal(){
     useEffect(() => {
         const handleClickOutside = (e : MouseEvent) => {
             if(boxRef.current && !boxRef.current.contains(e.target as Node)){
-                //router.push("/", { scroll: false})
                 handleClosePostModal(0)
             }
         }
