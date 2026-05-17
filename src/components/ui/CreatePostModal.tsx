@@ -58,7 +58,7 @@ function CreatePostModal(){
 
     const handleClosePostModal = ( delay = 0 ) => {
       setTimeout(() => {
-          router.push("/", { scroll: false })
+          router.push(pathName, { scroll: false})
       }, delay)
      
     }
