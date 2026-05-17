@@ -26,7 +26,9 @@ function CreatePostModal(){
                 handleClosePostModal(0)
             }
         }
+
         document.addEventListener("mousedown", handleClickOutside)
+
         return () => document.removeEventListener("mousedown", handleClickOutside)
     }, [router])
 
@@ -135,7 +137,7 @@ function UploadMediaStep({
     onInputFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void
     inputFileRef: React.RefObject<HTMLInputElement | null>
 }){
-    return (<section className="flex flex-col items-center justify-center my-30">
+    return (<section className="flex flex-col items-center justify-center my-30 animate-fade-in">
                 <div className="relative w-27 h-24 borde-1 border-white ">
                     <Image size={70} className="absolute -rotate-6 top-0"/>
                     <SquarePlay size={70} className="absolute rotate-6 bg-gray-900 top-5 left-10"/>
