@@ -2,13 +2,14 @@
 import { ViewType } from "@/types"
 import { ArrowLeft, Image, SquarePlay, X, ZoomIn } from "lucide-react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import React, { useState, useEffect, useRef, useCallback} from "react"
 function CreatePostModal(){
 
     const boxRef = useRef<HTMLDivElement | null>(null)
     const inputFileRef = useRef<HTMLInputElement | null>(null)
     const router = useRouter()
+    const pathName = usePathname()
     const [step, setStep] = useState(1)
     const [imageFile, setImageFile] = useState<File | null>(null)
     const zoomValueRef = useRef("")
@@ -118,7 +119,7 @@ function CreatePostModal(){
     const stepView = getStepView(step) ?? { title: "", node: <></>}
 
     return (<div className="fixed w-screen h-screen bg-black/85 flex justify-center items-center z-10">
-        <Link  className="absolute right-[25px] top-[25px]" href="/">
+        <Link  className="absolute right-[25px] top-[25px]" href={pathName}>
             <X size="30"/>
         </Link>
         <div className="bg-gray-900 w-xl min-w-lg min-h-[400px] " ref={boxRef}>
