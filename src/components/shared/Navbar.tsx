@@ -4,13 +4,13 @@ import { SearchBar } from "../ui/SearchBar"
 import { UsersList } from "../ui/UsersList"
 import { Suspense } from "react"
 import { Plus } from "lucide-react"
-import { useSearchParams } from "next/navigation"
+import { usePathname, useSearchParams } from "next/navigation"
 import { CreatePostModal } from "../ui/CreatePostModal"
 
 export default  function Navbar() {
 
   const searchParams = useSearchParams()
-
+  const pathName = usePathname()
   const getCreatePostModal = () => searchParams.get("new-post") ?  <CreatePostModal /> : null
 
   return <nav>
@@ -27,7 +27,7 @@ export default  function Navbar() {
         </SearchBar>
       </Suspense>
       <div className="flex gap-5">
-        <Link href="/?new-post=true">
+        <Link href={`${pathName}?new-post=true`}>
           <button type="button" className="w-[50px] h-[50px] rounded-full hover:bg-slate-900 hover:cursor-pointer flex justify-center items-center transition-all duration-200" aria-label="Create post">
             <Plus size={24}/>
           </button>
