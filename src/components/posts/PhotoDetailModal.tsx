@@ -3,7 +3,7 @@ import { useClickOutside } from "@/hooks/useClickOutside";
 import { useDisableScrolling } from "@/hooks/useDisableScrolling";
 import { X } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 
 export default function PhotoDetailModal({ photoId }: { photoId: string }) {
 
