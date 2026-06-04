@@ -5,18 +5,22 @@ import ErrorMsg from "./ErrorMsg"
 
 export default function Input({
     placeholder,
+    label,
     type,
     name,
     onChange,
     value,
-    error
+    error,
+    checked
 }: {
-    placeholder: string
+    placeholder?: string
+    label?: string
     type: HTMLInputTypeAttribute | undefined
     name: string
     onChange: (e: ChangeEvent<HTMLInputElement>) => void
     value: string
     error: string | null
+    checked?: boolean
 }) {
 
     const [isVisible, setIsVisible] = useState(false)
@@ -41,7 +45,8 @@ export default function Input({
                 type={getInputType()}
                 onChange={onChange} className={`border-1 p-3 text-blue rounded-xl my-2 w-full ${isValid}`}
                 autoComplete="false"
-                value={value} />
+                value={value}
+            />
             {
                 (type === "password")
                     ? <ShowHidePassword

@@ -1,76 +1,46 @@
 "use client"
 import Button from "@/components/ui/Button";
-import { redirect } from 'next/navigation';
 import Input from "@/components/ui/Input";
-import { emailIsValid } from "@/lib/utils";
 import Link from "next/link";
-import { ChangeEvent, useState } from "react";
 import { Loader } from "lucide-react";
+import { FormState, FormInputError } from "@/types";
+import { validateSinginInputs } from "@/lib/formValidations";
+import { useForm } from "@/hooks/useForm";
 
-interface FormState {
-  email: string
-  password: string
+
+const initErrors: FormInputError = {
+  email: null,
+  password: null
 }
-
-interface InputError {
-  email: null | string
-  password: null | string
+const initFormState: FormState = {
+  email: "",
+  password: ""
 }
-
-const initError = { email: null, password: null }
 
 export default function SignInPage() {
 
+  const {
+    formState,
+    error,
+    handleInputChange,
+    handleSubmit,
+    isLoading
+  } = useForm(initFormState, initErrors, validateSinginInputs)
 
-  const [error, setError] = useState<InputError>(initError)
-  const [isLoading, setIsloading] = useState(false)
-  const [formState, setFormState] = useState<FormState>({ email: "", password: "" })
+  const { email, password } = formState
+  const opacityClass = isLoading ? "opacity-50" : ""
 
-  const isValidEmail = (): boolean => {
-
-    if (formState.email.length === 0) {
-      setError(prevState => ({ ...prevState, email: "Email field shouldn't be empty" }))
-      return false
-    } else if (!emailIsValid(email)) {
-      setError(prevState => ({ ...prevState, email: "Email is not valid" }))
-      return false
-    }
-    return true
-
-  }
-
-  const isValidPassword = (): boolean => {
-    if (formState.password.length === 0) {
-      setError(prevState => ({ ...prevState, password: "Password field shouldn't be empty" }))
-      return false
-    }
-    return true
-  }
-
-  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setError(initError)
-    const validEmail = isValidEmail()
-    const validPassword = isValidPassword()
-
-    if (!validEmail || !validPassword) return
-
-    setIsloading(true)
+  const signIn = async (): Promise<void> => {
     console.log("Signin....")
     await new Promise((resolve) => setTimeout(resolve, 3000))
     console.log("Signed!!")
     console.log(`Logged user: ${formState.email} | password: ${formState.password}`)
-    setIsloading(false)
-    redirect("/")
   }
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormState((prevState) => ({ ...prevState, [name]: value }))
+  const onSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    handleSubmit(signIn)
   }
-
-  const { email, password } = formState
-  const opacityClass = isLoading ? "opacity-50" : ""
 
   return <div className="flex justify-center items-center mt-30 flex-col">
     <div className={`relative max-w-md w-[350px] mx-6 ${opacityClass} `}>
@@ -81,18 +51,18 @@ export default function SignInPage() {
       }
       <section className="flex flex-col w-full ">
         <h1 className="mb-3 text-2xl text-center">Log into OnlyPets</h1>
-        <form className="flex flex-col" onSubmit={handleSubmit}>
+        <form className="flex flex-col" onSubmit={onSubmit}>
           <Input placeholder="Mobile number, username or email"
             type="text"
             name="email"
             onChange={handleInputChange}
-            value={email}
+            value={email as string}
             error={error.email} />
           <Input placeholder="Password"
             type="password"
             name="password"
             onChange={handleInputChange}
-            value={password}
+            value={password as string}
             error={error.password} />
 
           <Button label="Log in" type="submit" disabled={isLoading} />

@@ -3,10 +3,10 @@ export interface User {
   name: string
   username: string
   email: string
-  
+
 }
 //Temporal
-export interface Product{
+export interface Product {
   id: number;
   title: string;
   thumbnail: string;
@@ -14,7 +14,7 @@ export interface Product{
   description: string;
   price: number;
 }
-export interface APIResponse{
+export interface APIResponse {
   products: Product[];
   total: number;
   skip: number;
@@ -26,7 +26,7 @@ export interface Post {
   id: string
   caption?: string
   imageUrl: string
-  userId: string 
+  userId: string
   createdAt: Date
 }
 
@@ -38,7 +38,11 @@ export interface Comment {
   createdAt: Date
 }
 
-export interface ViewType{
-    title?: string
-    node: React.ReactNode
+export interface ViewType {
+  title?: string
+  node: React.ReactNode
 }
+
+export type FormState = { [key: string]: string | boolean }
+
+export type FormInputError = { [key: string]: string | null }
