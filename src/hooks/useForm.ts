@@ -15,8 +15,12 @@ export const useForm = (
     const router = useRouter()
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target
-        setFormState((prevState) => ({ ...prevState, [name]: value }))
+        const { name, value, type, checked } = e.target
+        const finalValue = type === "checkbox" ? checked : value
+        setFormState((prevState) => ({
+            ...prevState,
+            [name]: finalValue
+        }))
     }
 
     const handleSubmit = async (callback: () => Promise<void>): Promise<void> => {

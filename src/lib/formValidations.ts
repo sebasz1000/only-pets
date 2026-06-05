@@ -29,8 +29,10 @@ export const isValidUsername = (username: string): string | null => {
 }
 
 export const isPasswordConfirmed = (password: string, passwordConfirmation: string): string | null => {
-    if (!(password === passwordConfirmation)) {
-        return "Password is not the same"
+    if (passwordConfirmation.length === 0) {
+        return "Password Confirmation field shouldn't be empty"
+    } else if (!(password === passwordConfirmation)) {
+        return "Passwords confirmation are not the same"
     }
     return null
 }
@@ -52,11 +54,12 @@ export const validateSignupInputs = (state: FormState, initErrors: FormInputErro
         } else if (inputName === "email") {
             inputErrors[inputName] = isValidEmail(state[inputName] as string)
         } else if (inputName === "password") {
-            inputErrors[inputName] === isValidPassword(state[inputName] as string)
+            inputErrors[inputName] = isValidPassword(state[inputName] as string)
         } else if (inputName === "passwordConfirmation") {
-            inputErrors[inputName] === isPasswordConfirmed(state.password as string, state[inputName] as string)
+            console.log(isPasswordConfirmed(state.password as string, state[inputName] as string))
+            inputErrors[inputName] = isPasswordConfirmed(state.password as string, state[inputName] as string)
         } else if (inputName === "termsConditions") {
-            inputErrors[inputName] === isTermsConditionsChecked(state.inputName as boolean)
+            inputErrors[inputName] = isTermsConditionsChecked(state[inputName] as boolean)
         }
     }//for
 

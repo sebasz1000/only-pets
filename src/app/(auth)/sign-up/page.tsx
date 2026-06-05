@@ -91,20 +91,19 @@ export default function SignUpPage() {
             name="passwordConfirmation"
             onChange={handleInputChange}
             value={passwordConfirmation as string}
-            error={error.passwordconfirmation} />
+            error={error.passwordConfirmation} />
           <Input
             type="checkbox"
             name="termsConditions"
-            value="termsConditions"
             onChange={handleInputChange}
             checked={termsConditions as boolean}
-            error={error.termsConditions} />
+            error={error.termsConditions}
+            label={"I accept terms and conditions"} />
           <Button label="Log in" type="submit" disabled={isLoading} />
         </form>
         <Button type="button" label="Forgot password?" disabled={false} />
-
-
       </section>
+
       <section className="flex flex-col w-full">
         <p className="text-sm text-center mt-10">Or login with</p>
         <Button type="button" label="Log in with Facebook" disabled={false} />

@@ -18,7 +18,7 @@ export default function Input({
     type: HTMLInputTypeAttribute | undefined
     name: string
     onChange: (e: ChangeEvent<HTMLInputElement>) => void
-    value: string
+    value?: string
     error: string | null
     checked?: boolean
 }) {
@@ -36,7 +36,28 @@ export default function Input({
         }
     }
 
+    const getErrorMsg = () => error ? <ErrorMsg error={error} /> : null
+
     const isValid = error ? "border-red-500" : ""
+
+    if (type === "checkbox") {
+        return (
+            <div className="flex flex-col items-center gap-2 my-5 justify-center">
+                <div className="flex gap-2">
+                    <input
+                        type="checkbox"
+                        name={name}
+                        checked={checked}
+                        onChange={onChange}
+                        className=""
+                        id={name}
+                    />
+                    {label ? <label htmlFor={name}>{label}</label> : null}
+                </div>
+                {getErrorMsg()}
+            </div>
+        )
+    }
 
     return (
         <div className="w-full relative">
@@ -54,11 +75,7 @@ export default function Input({
                         isVisible={isVisible} />
                     : null
             }
-            {
-                error
-                    ? <ErrorMsg error={error} />
-                    : null
-            }
+            {getErrorMsg()}
         </div>)
 }
 
