@@ -43,6 +43,21 @@ export interface ViewType {
   node: React.ReactNode
 }
 
-export type FormState = { [key: string]: string | boolean }
+export type BaseForm = {
+  email: string
+}
 
-export type FormInputError = { [key: string]: string | null }
+export type LoginForm = {
+  password: string
+} & BaseForm
+
+export type SignUpForm = {
+  username: string
+  email: string
+  newPassword: string
+  passwordConfirmation: string
+  termsConditions: boolean
+} & BaseForm
+
+
+export type FormInputError<T> = { [K in keyof T]: string | null }
