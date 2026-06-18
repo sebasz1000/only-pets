@@ -53,7 +53,6 @@ export type LoginForm = {
 
 export type SignUpForm = {
   username: string
-  email: string
   newPassword: string
   passwordConfirmation: string
   termsConditions: boolean
@@ -61,3 +60,10 @@ export type SignUpForm = {
 
 
 export type FormInputError<T> = { [K in keyof T]: string | null }
+
+export interface FormField {
+  readonly name: string
+  readonly type: string
+  readonly placeholder?: string
+  readonly label?: string
+}

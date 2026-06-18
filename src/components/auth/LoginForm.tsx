@@ -6,16 +6,19 @@ import { validateSinginInputs } from "@/lib/formValidations";
 import { useForm } from "@/hooks/useForm";
 import SocialLoginButtons from "@/components/auth/SocialLoginButtons";
 import type { FormInputError, LoginForm } from "@/types";
+import { LOGIN_FORM_INPUTS } from "@/consts/forms";
 
 
 const initErrors: FormInputError<LoginForm> = {
     email: null,
     password: null
 }
+
 const initFormState: LoginForm = {
     email: "",
     password: ""
 }
+
 
 export default function LoginForm({
     title
@@ -31,20 +34,20 @@ export default function LoginForm({
         isLoading
     } = useForm<LoginForm>(initFormState, initErrors, validateSinginInputs)
 
-    const { email, password } = formState
-    const opacityClass = isLoading ? "opacity-50" : ""
 
     const signIn = async (): Promise<void> => {
         console.log("Signin....")
         await new Promise((resolve) => setTimeout(resolve, 3000))
         console.log("Signed!!")
-        console.log(`Logged user: ${email} | password: ${password}`)
+        console.log(`Logged user: ${formState.email} | password: ${formState.password}`)
     }
 
     const onSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault()
         handleSubmit(signIn)
     }
+
+    const opacityClass = isLoading ? "opacity-50" : ""
 
     return (
         <div className={`relative max-w-md w-[350px] mx-6 ${opacityClass} `}>
@@ -60,19 +63,13 @@ export default function LoginForm({
                 </h1>
                 <form className="flex flex-col"
                     onSubmit={onSubmit}>
-                    <Input placeholder="Mobile number, username or email"
-                        type="text"
-                        name="email"
-                        onChange={handleInputChange}
-                        value={email}
-                        error={error.email} />
-                    <Input placeholder="Password"
-                        type="password"
-                        name="password"
-                        onChange={handleInputChange}
-                        value={password}
-                        error={error.password} />
-
+                    {
+                        LOGIN_FORM_INPUTS.map(input => <Input {...input}
+                            onChange={handleInputChange}
+                            value={formState[input.name as keyof LoginForm]}
+                            error={error[input.name as keyof LoginForm]}
+                            key={input.name as keyof LoginForm} />)
+                    }
                     <Button label="Log in"
                         type="submit"
                         disabled={isLoading} />
@@ -80,7 +77,6 @@ export default function LoginForm({
                 <Button type="button"
                     label="Forgot password?"
                     disabled={false} />
-
 
             </section>
             <SocialLoginButtons />

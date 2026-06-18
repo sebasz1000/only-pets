@@ -6,6 +6,7 @@ import Input from "../ui/Input";
 import Button from "../ui/Button";
 import { Loader } from "lucide-react";
 import SocialLoginButtons from "./SocialLoginButtons";
+import { SIGNUP_FORM_INPUTS } from "@/consts/forms";
 
 const initErrorsState: FormInputError<SignUpForm> = {
     username: null,
@@ -37,29 +38,19 @@ export default function SignUpForm({
         error
     } = useForm<SignUpForm>(initFormState, initErrorsState, validateSignupInputs)
 
-    const {
-        username,
-        email,
-        newPassword,
-        passwordConfirmation,
-        termsConditions
-    } = formState
-
     const opacityClass = isLoading ? "opacity-50" : ""
 
     const signUp = async (): Promise<void> => {
         console.log("Registering....")
         await new Promise((resolve) => setTimeout(resolve, 3000))
         console.log("Registered!!")
-        console.log(`Registered user: ${email} | password: ${newPassword}`)
+        console.log(`Registered user: ${formState.email} | password: ${formState.newPassword}`)
     }
 
     const onSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault()
         handleSubmit(signUp)
     }
-
-
 
     return (
         <div className={`relative max-w-md w-[350px] mx-6 ${opacityClass} `}>
@@ -75,37 +66,19 @@ export default function SignUpForm({
                 </h1>
                 <form className="flex flex-col"
                     onSubmit={onSubmit}>
-                    <Input placeholder="LunitaM..."
-                        type="text"
-                        name="username"
-                        onChange={handleInputChange}
-                        value={username}
-                        error={error.username} />
-                    <Input placeholder="Mobile number, username or email"
-                        type="text"
-                        name="email"
-                        onChange={handleInputChange}
-                        value={email}
-                        error={error.email} />
-                    <Input placeholder="Password"
-                        type="password"
-                        name="newPassword"
-                        onChange={handleInputChange}
-                        value={newPassword}
-                        error={error.newPassword} />
-                    <Input placeholder="Confirm Password"
-                        type="password"
-                        name="passwordConfirmation"
-                        onChange={handleInputChange}
-                        value={passwordConfirmation}
-                        error={error.passwordConfirmation} />
-                    <Input
-                        type="checkbox"
-                        name="termsConditions"
-                        onChange={handleInputChange}
-                        checked={termsConditions}
-                        error={error.termsConditions}
-                        label={"I accept terms and conditions"} />
+                    {
+                        SIGNUP_FORM_INPUTS.map(input => {
+                            const value = formState[input.name as keyof SignUpForm]
+                            const errorMsg = error[input.name as keyof SignUpForm]
+                            return <Input {...input}
+                                onChange={handleInputChange}
+                                error={errorMsg}
+                                {...((input.type === "checkbox")
+                                    ? { checked: value as boolean }
+                                    : { value: value as string })}
+                                key={input.name} />
+                        })
+                    }
                     <Button label="Log in"
                         type="submit"
                         disabled={isLoading} />
